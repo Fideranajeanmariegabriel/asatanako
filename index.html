@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #quiz h1 {
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options label {
+            display: block;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz</h1>
+        <div id="quiz"></div>
+        <button id="submit">Invia Risposte</button>
+        <div id="results"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const questions = [
+            {
+                "question": "Qual è il colore del cielo?",
+                "options": ["Blu", "Verde", "Rosso", "Giallo"],
+                "answer": "Blu"
+            },
+            {
+                "question": "Quanti giorni ci sono in una settimana?",
+                "options": ["5", "6", "7", "8"],
+                "answer": "7"
+            },
+            {
+                "question": "Qual è la capitale d'Italia?",
+                "options": ["Milano", "Roma", "Venezia", "Napoli"],
+                "answer": "Roma"
+            },
+            {
+                "question": "Quanto fa 2 + 2?",
+                "options": ["3", "4", "5", "6"],
+                "answer": "4"
+            },
+            {
+                "question": "Qual è l'animale simbolo dell'Australia?",
+                "options": ["Canguro", "Elefante", "Leone", "Orso"],
+                "answer": "Canguro"
+            },
+            {
+                "question": "Qual è il pianeta più vicino al sole?",
+                "options": ["Terra", "Marte", "Mercurio", "Venere"],
+                "answer": "Mercurio"
+            },
+            {
+                "question": "Qual è la valuta del Giappone?",
+                "options": ["Yuan", "Yen", "Dollaro", "Euro"],
+                "answer": "Yen"
+            },
+            {
+                "question": "Chi ha dipinto la Mona Lisa?",
+                "options": ["Michelangelo", "Raffaello", "Leonardo da Vinci", "Caravaggio"],
+                "answer": "Leonardo da Vinci"
+            },
+            {
+                "question": "Qual è la capitale della Francia?",
+                "options": ["Londra", "Parigi", "Berlino", "Madrid"],
+                "answer": "Parigi"
+            },
+            {
+                "question": "Qual è la montagna più alta del mondo?",
+                "options": ["K2", "Kilimanjaro", "Everest", "Aconcagua"],
+                "answer": "Everest"
+            },
+            {
+                "question": "Chi ha scritto 'Il Signore degli Anelli'?",
+                "options": ["J.K. Rowling", "J.R.R. Tolkien", "George R.R. Martin", "C.S. Lewis"],
+                "answer": "J.R.R. Tolkien"
+            },
+            {
+                "question": "Qual è la capitale dell'India?",
+                "options": ["Mumbai", "Nuova Delhi", "Calcutta", "Chennai"],
+                "answer": "Nuova Delhi"
+            },
+            {
+                "question": "Qual è il simbolo chimico dell'acqua?",
+                "options": ["H2", "O2", "H2O", "HO"],
+                "answer": "H2O"
+            },
+            {
+                "question": "Qual è il frutto principale utilizzato per fare il vino?",
+                "options": ["Mele", "Arance", "Uva", "Pere"],
+                "answer": "Uva"
+            },
+            {
+                "question": "Qual è il più grande oceano della Terra?",
+                "options": ["Oceano Atlantico", "Oceano Indiano", "Oceano Artico", "Oceano Pacifico"],
+                "answer": "Oceano Pacifico"
+            },
+            {
+                "question": "Chi ha inventato la lampadina?",
+                "options": ["Nikola Tesla", "Albert Einstein", "Thomas Edison", "Alexander Graham Bell"],
+                "answer": "Thomas Edison"
+            },
+            {
+                "question": "Qual è la capitale del Regno Unito?",
+                "options": ["Edimburgo", "Dublino", "Londra", "Cardiff"],
+                "answer": "Londra"
+            },
+            {
+                "question": "Qual è il paese più grande del mondo per superficie?",
+                "options": ["Canada", "Cina", "Stati Uniti", "Russia"],
+                "answer": "Russia"
+            },
+            {
+                "question": "Qual è l'elemento chimico con simbolo O?",
+                "options": ["Oro", "Ossigeno", "Osmio", "Olmo"],
+                "answer": "Ossigeno"
+            },
+            {
+                "question": "Qual è il numero di pianeti nel sistema solare?",
+                "options": ["7", "8", "9", "10"],
+                "answer": "8"
+            }
+        ];
+
+        $(document).ready(function() {
+            var quizContainer = $('#quiz');
+            
+            // Genera il quiz
+            questions.forEach(function(question, index) {
+                var questionHTML = '<div class="question">';
+                questionHTML += '<h3>' + (index + 1) + '. ' + question.question + '</h3>';
+                questionHTML += '<div class="options">';
+                question.options.forEach(function(option) {
+                    questionHTML += '<label><input type="radio" name="question' + index + '" value="' + option + '"> ' + option + '</label>';
+                });
+                questionHTML += '</div></div>';
+                quizContainer.append(questionHTML);
+            });
+
+            // Gestisci l'invio del quiz
+            $('#submit').click(function() {
+                var score = 0;
+
+                questions.forEach(function(question, index) {
+                    var selectedOption = $('input[name="question' + index + '"]:checked').val();
+                    if (selectedOption === question.answer) {
+                        score++;
+                    }
+                });
+
+                $('#results').html('Hai risposto correttamente a ' + score + ' su ' + questions.length + ' domande.');
+            });
+        });
+    </script>
+</body>
+</html>
