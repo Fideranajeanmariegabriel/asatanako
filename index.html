@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
+            overflow: hidden; /* Prevent body scrolling */
         }
 
         #quiz-container {
@@ -22,8 +23,8 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-height: 80vh;
-            overflow-y: auto;
+            height: 90vh; /* Use most of the viewport height */
+            overflow-y: auto; /* Enable scrolling within the container */
         }
 
         #quiz h1 {
