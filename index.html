@@ -63,17 +63,32 @@
 
         #results {
             margin-top: 20px;
-            color: #28a745;
         }
 
         #language-switch {
             margin-bottom: 20px;
         }
 
-        /* Classe per disabilitare gli elementi */
         .disabled {
             pointer-events: none;
             opacity: 0.5;
+        }
+
+        .correct {
+            color: #28a745; /* Verde per le risposte corrette */
+        }
+
+        .incorrect {
+            color: #dc3545; /* Rosso per le risposte sbagliate */
+        }
+
+        .correct-answer {
+            color: #6c757d; /* Grigio per l'indizio della risposta corretta */
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -86,6 +101,7 @@
         <h1>Quiz</h1>
         <div id="quiz"></div>
         <button id="submit">Invia Risposte</button>
+        <button id="view-results" class="hidden">Click qui per vedere i risultati</button>
         <div id="results"></div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -240,7 +256,7 @@
                     "answer": "Paris"
                 },
                 {
-                    "question": "Quel est le plus haut sommet du monde ?",
+                    "question": "Quelle est la montagne la plus haute du monde ?",
                     "options": ["K2", "Kilimandjaro", "Everest", "Aconcagua"],
                     "answer": "Everest"
                 },
@@ -270,7 +286,7 @@
                     "answer": "Océan Pacifique"
                 },
                 {
-                    "question": "Qui a inventé l'ampoule électrique ?",
+                    "question": "Qui a inventé l'ampoule ?",
                     "options": ["Nikola Tesla", "Albert Einstein", "Thomas Edison", "Alexander Graham Bell"],
                     "answer": "Thomas Edison"
                 },
@@ -280,17 +296,17 @@
                     "answer": "Londres"
                 },
                 {
-                    "question": "Quel est le plus grand pays du monde par superficie ?",
+                    "question": "Quel est le pays le plus grand du monde par superficie ?",
                     "options": ["Canada", "Chine", "États-Unis", "Russie"],
                     "answer": "Russie"
                 },
                 {
                     "question": "Quel est l'élément chimique avec le symbole O ?",
-                    "options": ["Or", "Oxygène", "Osmium", "Orme"],
+                    "options": ["Or", "Oxygène", "Osmium", "Olive"],
                     "answer": "Oxygène"
                 },
                 {
-                    "question": "Combien y a-t-il de planètes dans le système solaire ?",
+                    "question": "Quel est le nombre de planètes dans le système solaire ?",
                     "options": ["7", "8", "9", "10"],
                     "answer": "8"
                 }
@@ -317,6 +333,8 @@
             });
 
             $('#results').empty();
+            $('#view-results').addClass('hidden'); // Nascondi il pulsante dei risultati
+            $('#submit').removeClass('hidden'); // Mostra il pulsante di invio
         }
 
         function disableQuiz() {
@@ -324,6 +342,32 @@
             $('#submit').prop('disabled', true);
             $('#italian').addClass('disabled');
             $('#french').addClass('disabled');
+        }
+
+        function showResults() {
+            var resultHTML = '';
+
+            questions[currentLanguage].forEach(function(question, index) {
+                var selectedOption = $('input[name="question' + index + '"]:checked').val();
+                var correct = selectedOption === question.answer;
+
+                resultHTML += '<div class="question">';
+                resultHTML += '<h3>' + (index + 1) + '. ' + question.question + '</h3>';
+
+                question.options.forEach(function(option) {
+                    if (option === question.answer) {
+                        resultHTML += '<p class="correct">' + option + ' <span class="correct-answer">(Réponse correcte)</span></p>';
+                    } else if (option === selectedOption) {
+                        resultHTML += '<p class="incorrect">' + option + ' <span class="correct-answer">(Réponse correcte: ' + question.answer + ')</span></p>';
+                    } else {
+                        resultHTML += '<p>' + option + '</p>';
+                    }
+                });
+
+                resultHTML += '</div>';
+            });
+
+            $('#results').html(resultHTML);
         }
 
         $(document).ready(function() {
@@ -363,6 +407,15 @@
                 
                 // Disabilita il quiz e i pulsanti
                 disableQuiz();
+                
+                // Mostra il pulsante per vedere i risultati
+                $('#view-results').removeClass('hidden');
+                $('#submit').addClass('hidden');
+            });
+
+            // Gestisci la visualizzazione dei risultati
+            $('#view-results').click(function() {
+                showResults();
             });
         });
     </script>
