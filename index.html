@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz pour Fiderana_Dimby1</title>
+    <title>Quiz pour Fiderana_Dimby</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +68,12 @@
 
         #language-switch {
             margin-bottom: 20px;
+        }
+
+        /* Classe per disabilitare gli elementi */
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -313,15 +319,26 @@
             $('#results').empty();
         }
 
+        function disableQuiz() {
+            $('#quiz input[type="radio"]').prop('disabled', true);
+            $('#submit').prop('disabled', true);
+            $('#italian').addClass('disabled');
+            $('#french').addClass('disabled');
+        }
+
         $(document).ready(function() {
             loadQuiz(currentLanguage);
 
             $('#italian').click(function() {
-                loadQuiz('it');
+                if (!$('#submit').prop('disabled')) {
+                    loadQuiz('it');
+                }
             });
 
             $('#french').click(function() {
-                loadQuiz('fr');
+                if (!$('#submit').prop('disabled')) {
+                    loadQuiz('fr');
+                }
             });
 
             // Gestisci l'invio del quiz
@@ -343,6 +360,9 @@
                 
                 // Mostra il risultato anche nella pagina
                 $('#results').html(resultMessage);
+                
+                // Disabilita il quiz e i pulsanti
+                disableQuiz();
             });
         });
     </script>
