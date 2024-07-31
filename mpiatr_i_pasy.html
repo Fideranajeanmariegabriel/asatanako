@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Notes des Étudiants</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        #student-form, #grade-form {
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #students-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #students-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .student-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grade-details {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Gestion des Notes des Étudiants</h1>
+        <div id="student-form">
+            <h2>Ajouter un étudiant</h2>
+            <input type="text" id="student-name" placeholder="Nom de l'étudiant">
+            <button id="add-student-btn">Ajouter Étudiant</button>
+        </div>
+        <div id="grade-form">
+            <h2>Ajouter une note</h2>
+            <select id="student-select">
+                <option value="">Sélectionner un étudiant</option>
+            </select>
+            <input type="text" id="subject" placeholder="Matière">
+            <input type="number" id="grade" placeholder="Note / 20" min="0" max="20">
+            <input type="month" id="exam-month">
+            <button id="add-grade-btn">Ajouter Note</button>
+        </div>
+        <div id="students-list">
+            <h2>Liste des Étudiants et Notes</h2>
+            <ul id="students"></ul>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let students = [];
+
+            function loadStudents() {
+                const data = localStorage.getItem('students');
+                if (data) {
+                    students = JSON.parse(data);
+                }
+                renderStudents();
+                populateStudentSelect();
+            }
+
+            function saveStudents() {
+                localStorage.setItem('students', JSON.stringify(students));
+            }
+
+            function addStudent(name) {
+                if (name && !students.find(student => student.name === name)) {
+                    students.push({ name, grades: [] });
+                    saveStudents();
+                    renderStudents();
+                    populateStudentSelect();
+                } else {
+                    alert('Étudiant déjà existant ou nom invalide.');
+                }
+            }
+
+            function addGrade(studentName, subject, grade, month) {
+                const student = students.find(student => student.name === studentName);
+                if (student && subject && grade && month) {
+                    student.grades.push({ subject, grade: parseFloat(grade), month });
+                    saveStudents();
+                    renderStudents();
+                } else {
+                    alert('Données de note invalides.');
+                }
+            }
+
+            function calculateAverage(grades) {
+                const total = grades.reduce((sum, grade) => sum + grade.grade, 0);
+                return grades.length ? (total / grades.length).toFixed(2) : 'N/A';
+            }
+
+            function renderStudents() {
+                const studentsList = document.getElementById('students');
+                studentsList.innerHTML = '';
+                students.forEach(student => {
+                    const studentElement = document.createElement('li');
+                    studentElement.innerHTML = `
+                        <div class="student-details">
+                            <span>${student.name}</span>
+                            <span>Moyenne: ${calculateAverage(student.grades)} / 20</span>
+                        </div>
+                        <div class="grade-details">
+                            ${student.grades.map(grade => `
+                                <div>
+                                    <strong>${grade.subject}</strong>: ${grade.grade} / 20 (${grade.month})
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    studentsList.appendChild(studentElement);
+                });
+            }
+
+            function populateStudentSelect() {
+                const studentSelect = document.getElementById('student-select');
+                studentSelect.innerHTML = '<option value="">Sélectionner un étudiant</option>';
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.name;
+                    option.textContent = student.name;
+                    studentSelect.appendChild(option);
+                });
+            }
+
+            document.getElementById('add-student-btn').addEventListener('click', () => {
+                const studentName = document.getElementById('student-name').value.trim();
+                addStudent(studentName);
+                document.getElementById('student-name').value = '';
+            });
+
+            document.getElementById('add-grade-btn').addEventListener('click', () => {
+                const studentName = document.getElementById('student-select').value;
+                const subject = document.getElementById('subject').value.trim();
+                const grade = document.getElementById('grade').value;
+                const month = document.getElementById('exam-month').value;
+                addGrade(studentName, subject, grade, month);
+                document.getElementById('subject').value = '';
+                document.getElementById('grade').value = '';
+                document.getElementById('exam-month').value = '';
+            });
+
+            loadStudents();
+        });
+    </script>
+</body>
+</html>
