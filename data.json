@@ -1,0 +1,7 @@
+{
+    "pins": [
+        { "id": 1, "pin": "1234", "user": "Alice" },
+        { "id": 2, "pin": "5678", "user": "Bob" },
+        { "id": 3, "pin": "91011", "user": "Charlie" }
+    ]
+}
