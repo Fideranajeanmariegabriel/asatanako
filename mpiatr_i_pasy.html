@@ -3,38 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Notes des Étudiants</title>
+    <title>Gestion des Étudiants et Notes</title>
     <style>
+        /* Stili base per la pagina */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-        }
-
-        #container {
-            width: 600px;
-            background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        h1, h2 {
-            text-align: center;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
 
-        #student-form, #grade-form {
-            margin-bottom: 20px;
+        table, th, td {
+            border: 1px solid #ddd;
         }
 
-        input, select, button {
-            width: calc(100% - 20px);
+        th, td {
             padding: 10px;
-            margin: 5px 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input, button, select {
+            padding: 10px;
+            margin: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
@@ -49,146 +49,325 @@
             background-color: #0056b3;
         }
 
-        #students-list ul {
-            list-style-type: none;
-            padding: 0;
+        .editable {
+            background-color: #e9e9e9;
+            cursor: pointer;
         }
 
-        #students-list li {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .student-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .grade-details {
-            margin-left: 20px;
+        .editable:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <h1>Gestion des Notes des Étudiants</h1>
-        <div id="student-form">
-            <h2>Ajouter un étudiant</h2>
-            <input type="text" id="student-name" placeholder="Nom de l'étudiant">
-            <button id="add-student-btn">Ajouter Étudiant</button>
-        </div>
-        <div id="grade-form">
-            <h2>Ajouter une note</h2>
-            <select id="student-select">
-                <option value="">Sélectionner un étudiant</option>
-            </select>
-            <input type="text" id="subject" placeholder="Matière">
-            <input type="number" id="grade" placeholder="Note / 20" min="0" max="20">
-            <input type="month" id="exam-month">
-            <button id="add-grade-btn">Ajouter Note</button>
-        </div>
-        <div id="students-list">
-            <h2>Liste des Étudiants et Notes</h2>
-            <ul id="students"></ul>
-        </div>
+    <h1>Gestion des Étudiants et Notes</h1>
+
+    <div>
+        <input type="text" id="search-student" placeholder="Rechercher un étudiant" oninput="filterStudents()">
     </div>
+
+    <h2>1. Tableau des Étudiants</h2>
+    <table id="students-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de Naissance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="students-body"></tbody>
+    </table>
+
+    <h3>Ajouter ou Modifier Étudiant</h3>
+    <input type="text" id="student-name" placeholder="Nom">
+    <input type="text" id="student-firstname" placeholder="Prénom">
+    <input type="date" id="student-birthdate">
+    <button id="add-student-btn">Ajouter Étudiant</button>
+
+    <h2>2. Tableau des Notes</h2>
+    <table id="grades-table">
+        <thead>
+            <tr>
+                <th>ID Étudiant</th>
+                <th>Matière</th>
+                <th>Note</th>
+                <th>Mois</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="grades-body"></tbody>
+    </table>
+
+    <h3>Ajouter ou Modifier Note</h3>
+    <input type="text" id="grade-student-id" placeholder="ID Étudiant">
+    <input type="text" id="grade-subject" placeholder="Matière">
+    <input type="number" id="grade-score" placeholder="Note" min="0" max="20">
+    <select id="grade-month">
+        <option value="">Sélectionnez un mois</option>
+        <option value="Janvier">Janvier</option>
+        <option value="Février">Février</option>
+        <option value="Mars">Mars</option>
+        <option value="Avril">Avril</option>
+        <option value="Mai">Mai</option>
+        <option value="Juin">Juin</option>
+        <option value="Juillet">Juillet</option>
+        <option value="Août">Août</option>
+        <option value="Septembre">Septembre</option>
+        <option value="Octobre">Octobre</option>
+        <option value="Novembre">Novembre</option>
+        <option value="Décembre">Décembre</option>
+    </select>
+    <button id="add-grade-btn">Ajouter Note</button>
+
+    <h2>Actions</h2>
+    <button id="export-students-btn">Exporter les Étudiants en CSV</button>
+    <input type="file" id="import-file" accept=".csv">
+    <button id="import-students-btn">Importer les Étudiants depuis CSV</button>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let students = [];
+        // Carica i dati dal localStorage
+        function loadData() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const grades = JSON.parse(localStorage.getItem('grades')) || [];
+            return { students, grades };
+        }
 
-            function loadStudents() {
-                const data = localStorage.getItem('students');
-                if (data) {
-                    students = JSON.parse(data);
-                }
-                renderStudents();
-                populateStudentSelect();
+        // Salva i dati nel localStorage
+        function saveData(students, grades) {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('grades', JSON.stringify(grades));
+        }
+
+        // Inizializza i dati se non esistono
+        function initializeData() {
+            if (!localStorage.getItem('students')) {
+                saveData([], []);
             }
+        }
 
-            function saveStudents() {
-                localStorage.setItem('students', JSON.stringify(students));
-            }
-
-            function addStudent(name) {
-                if (name && !students.find(student => student.name === name)) {
-                    students.push({ name, grades: [] });
-                    saveStudents();
-                    renderStudents();
-                    populateStudentSelect();
-                } else {
-                    alert('Étudiant déjà existant ou nom invalide.');
-                }
-            }
-
-            function addGrade(studentName, subject, grade, month) {
-                const student = students.find(student => student.name === studentName);
-                if (student && subject && grade && month) {
-                    student.grades.push({ subject, grade: parseFloat(grade), month });
-                    saveStudents();
-                    renderStudents();
-                } else {
-                    alert('Données de note invalides.');
-                }
-            }
-
-            function calculateAverage(grades) {
-                const total = grades.reduce((sum, grade) => sum + grade.grade, 0);
-                return grades.length ? (total / grades.length).toFixed(2) : 'N/A';
-            }
-
-            function renderStudents() {
-                const studentsList = document.getElementById('students');
-                studentsList.innerHTML = '';
-                students.forEach(student => {
-                    const studentElement = document.createElement('li');
-                    studentElement.innerHTML = `
-                        <div class="student-details">
-                            <span>${student.name}</span>
-                            <span>Moyenne: ${calculateAverage(student.grades)} / 20</span>
-                        </div>
-                        <div class="grade-details">
-                            ${student.grades.map(grade => `
-                                <div>
-                                    <strong>${grade.subject}</strong>: ${grade.grade} / 20 (${grade.month})
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    studentsList.appendChild(studentElement);
-                });
-            }
-
-            function populateStudentSelect() {
-                const studentSelect = document.getElementById('student-select');
-                studentSelect.innerHTML = '<option value="">Sélectionner un étudiant</option>';
-                students.forEach(student => {
-                    const option = document.createElement('option');
-                    option.value = student.name;
-                    option.textContent = student.name;
-                    studentSelect.appendChild(option);
-                });
-            }
-
-            document.getElementById('add-student-btn').addEventListener('click', () => {
-                const studentName = document.getElementById('student-name').value.trim();
-                addStudent(studentName);
-                document.getElementById('student-name').value = '';
+        // Visualizza gli studenti nella tabella
+        function renderStudents() {
+            const { students } = loadData();
+            const studentsBody = document.getElementById('students-body');
+            studentsBody.innerHTML = '';
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td class="editable" data-id="${student.id}" data-field="name" contenteditable="true">${student.name}</td>
+                    <td class="editable" data-id="${student.id}" data-field="firstname" contenteditable="true">${student.firstname}</td>
+                    <td class="editable" data-id="${student.id}" data-field="birthdate" contenteditable="true">${student.birthdate}</td>
+                    <td><button onclick="deleteStudent('${student.id}')">Supprimer</button></td>
+                `;
+                studentsBody.appendChild(row);
             });
+        }
 
-            document.getElementById('add-grade-btn').addEventListener('click', () => {
-                const studentName = document.getElementById('student-select').value;
-                const subject = document.getElementById('subject').value.trim();
-                const grade = document.getElementById('grade').value;
-                const month = document.getElementById('exam-month').value;
-                addGrade(studentName, subject, grade, month);
-                document.getElementById('subject').value = '';
-                document.getElementById('grade').value = '';
-                document.getElementById('exam-month').value = '';
+        // Visualizza le note nella tabella
+        function renderGrades() {
+            const { grades } = loadData();
+            const gradesBody = document.getElementById('grades-body');
+            gradesBody.innerHTML = '';
+            grades.forEach(grade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="editable" data-id="${grade.studentId}" data-field="studentId" contenteditable="true">${grade.studentId}</td>
+                    <td class="editable" data-id="${grade.studentId}" data-field="subject" contenteditable="true">${grade.subject}</td>
+                    <td class="editable" data-id="${grade.studentId}" data-field="score" contenteditable="true">${grade.score}</td>
+                    <td class="editable" data-id="${grade.studentId}" data-field="month" contenteditable="true">${grade.month}</td>
+                    <td><button onclick="deleteGrade('${grade.studentId}', '${grade.subject}')">Supprimer</button></td>
+                `;
+                gradesBody.appendChild(row);
             });
+            calculateAverages();
+        }
 
-            loadStudents();
+        // Calcola la media delle note
+        function calculateAverages() {
+            const { students, grades } = loadData();
+            students.forEach(student => {
+                const studentGrades = grades.filter(grade => grade.studentId === student.id);
+                if (studentGrades.length > 0) {
+                    const totalScore = studentGrades.reduce((acc, grade) => acc + parseFloat(grade.score), 0);
+                    const average = totalScore / studentGrades.length;
+                    console.log(`Moyenne de l'étudiant ${student.name}: ${average.toFixed(2)}`);
+                }
+            });
+        }
+
+        // Genera un ID unico per lo studente
+        function generateStudentId() {
+            const { students } = loadData();
+            const maxId = students.reduce((max, student) => Math.max(max, parseInt(student.id, 10)), 0);
+            return String(maxId + 1).padStart(6, '0');
+        }
+
+        // Aggiungi o modifica uno studente
+        document.getElementById('add-student-btn').addEventListener('click', () => {
+            const name = document.getElementById('student-name').value.trim();
+            const firstname = document.getElementById('student-firstname').value.trim();
+            const birthdate = document.getElementById('student-birthdate').value.trim();
+            if (!name || !firstname || !birthdate) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            const { students, grades } = loadData();
+            const id = generateStudentId();
+            students.push({ id, name, firstname, birthdate });
+            saveData(students, grades);
+            renderStudents();
         });
+
+        // Aggiungi o modifica una nota
+        document.getElementById('add-grade-btn').addEventListener('click', () => {
+            const studentId = document.getElementById('grade-student-id').value.trim();
+            const subject = document.getElementById('grade-subject').value.trim();
+            const score = document.getElementById('grade-score').value.trim();
+            const month = document.getElementById('grade-month').value.trim();
+            if (!studentId || !subject || !score || !month) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            const { students, grades } = loadData();
+            if (!students.find(student => student.id === studentId)) {
+                alert('Étudiant non trouvé.');
+                return;
+            }
+            const gradeIndex = grades.findIndex(grade => grade.studentId === studentId && grade.subject === subject);
+
+            if (gradeIndex > -1) {
+                // Modifica nota esistente
+                grades[gradeIndex] = { studentId, subject, score, month };
+            } else {
+                // Aggiungi nuova nota
+                grades.push({ studentId, subject, score, month });
+            }
+
+            saveData(students, grades);
+            renderGrades();
+        });
+
+        // Elimina uno studente
+        window.deleteStudent = function(id) {
+            const { students, grades } = loadData();
+            const newStudents = students.filter(student => student.id !== id);
+            const newGrades = grades.filter(grade => grade.studentId !== id);
+            saveData(newStudents, newGrades);
+            renderStudents();
+            renderGrades();
+        };
+
+        // Elimina una nota
+        window.deleteGrade = function(studentId, subject) {
+            const { students, grades } = loadData();
+            const newGrades = grades.filter(grade => !(grade.studentId === studentId && grade.subject === subject));
+            saveData(students, newGrades);
+            renderGrades();
+        };
+
+        // Filtra gli studenti
+        window.filterStudents = function() {
+            const query = document.getElementById('search-student').value.toLowerCase();
+            const rows = document.querySelectorAll('#students-body tr');
+            rows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const firstname = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                row.style.display = (name.includes(query) || firstname.includes(query)) ? '' : 'none';
+            });
+        };
+
+        // Gestisce le modifiche in tempo reale delle celle
+        document.getElementById('students-body').addEventListener('blur', async (event) => {
+            if (event.target.classList.contains('editable')) {
+                const id = event.target.dataset.id;
+                const field = event.target.dataset.field;
+                const value = event.target.textContent.trim();
+                const { students } = loadData();
+                const studentIndex = students.findIndex(student => student.id === id);
+                if (studentIndex > -1) {
+                    students[studentIndex][field] = value;
+                    saveData(students, (await loadData()).grades);
+                    renderStudents();
+                }
+            }
+        }, true);
+
+        document.getElementById('grades-body').addEventListener('blur', async (event) => {
+            if (event.target.classList.contains('editable')) {
+                const studentId = event.target.dataset.id;
+                const field = event.target.dataset.field;
+                const value = event.target.textContent.trim();
+                const { grades } = loadData();
+                const gradeIndex = grades.findIndex(grade => grade.studentId === studentId && field === 'subject' ? grade.subject === value : grade[field] === value);
+                if (gradeIndex > -1) {
+                    grades[gradeIndex][field] = field === 'score' ? parseFloat(value) : value;
+                    saveData((await loadData()).students, grades);
+                    renderGrades();
+                }
+            }
+        }, true);
+
+        // Funzione per esportare i dati degli studenti in CSV
+        function exportToCSV() {
+            const { students } = loadData();
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            // Intestazioni delle colonne
+            csvContent += "ID,Nom,Prénom,Date de Naissance\n";
+
+            // Dati degli studenti
+            students.forEach(student => {
+                csvContent += `${student.id},${student.name},${student.firstname},${student.birthdate}\n`;
+            });
+
+            // Creazione del link di download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "students.csv");
+            document.body.appendChild(link);
+
+            // Download del file
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Funzione per importare i dati degli studenti da un file CSV
+        function importFromCSV(file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const csv = event.target.result;
+                const lines = csv.split('\n').slice(1); // Salta l'intestazione
+                const students = [];
+                lines.forEach(line => {
+                    if (line) {
+                        const [id, name, firstname, birthdate] = line.split(',');
+                        students.push({ id, name, firstname, birthdate });
+                    }
+                });
+                const { grades } = loadData();
+                saveData(students, grades);
+                renderStudents();
+            };
+            reader.readAsText(file);
+        }
+
+        // Evento per il pulsante di importazione
+        document.getElementById('import-students-btn').addEventListener('click', () => {
+            const fileInput = document.getElementById('import-file');
+            if (fileInput.files.length > 0) {
+                importFromCSV(fileInput.files[0]);
+            } else {
+                alert('Veuillez sélectionner un fichier CSV.');
+            }
+        });
+
+        // Inizializza la pagina
+        initializeData();
+        renderStudents();
+        renderGrades();
     </script>
 </body>
 </html>
