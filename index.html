@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
-            overflow: hidden; /* Prevent body scrolling */
+            overflow: hidden;
         }
 
         #quiz-container {
@@ -23,20 +23,27 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
-            height: 90vh; /* Use most of the viewport height */
-            overflow-y: auto; /* Enable scrolling within the container */
+            height: 90vh;
+            overflow-y: auto;
         }
 
-        #quiz h1 {
+        #quiz-container h1 {
             margin-bottom: 20px;
+            color: #007bff;
         }
 
         .question {
             margin-bottom: 20px;
         }
 
+        .question h3 {
+            color: #333;
+        }
+
         .options label {
             display: block;
+            margin-bottom: 5px;
+            color: #555;
         }
 
         button {
@@ -55,11 +62,20 @@
 
         #results {
             margin-top: 20px;
+            color: #28a745;
+        }
+
+        #language-switch {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div id="quiz-container">
+        <div id="language-switch">
+            <button id="italian">Italiano</button>
+            <button id="french">Français</button>
+        </div>
         <h1>Quiz</h1>
         <div id="quiz"></div>
         <button id="submit">Invia Risposte</button>
@@ -67,114 +83,222 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const questions = [
-            {
-                "question": "Qual è il colore del cielo?",
-                "options": ["Blu", "Verde", "Rosso", "Giallo"],
-                "answer": "Blu"
-            },
-            {
-                "question": "Quanti giorni ci sono in una settimana?",
-                "options": ["5", "6", "7", "8"],
-                "answer": "7"
-            },
-            {
-                "question": "Qual è la capitale d'Italia?",
-                "options": ["Milano", "Roma", "Venezia", "Napoli"],
-                "answer": "Roma"
-            },
-            {
-                "question": "Quanto fa 2 + 2?",
-                "options": ["3", "4", "5", "6"],
-                "answer": "4"
-            },
-            {
-                "question": "Qual è l'animale simbolo dell'Australia?",
-                "options": ["Canguro", "Elefante", "Leone", "Orso"],
-                "answer": "Canguro"
-            },
-            {
-                "question": "Qual è il pianeta più vicino al sole?",
-                "options": ["Terra", "Marte", "Mercurio", "Venere"],
-                "answer": "Mercurio"
-            },
-            {
-                "question": "Qual è la valuta del Giappone?",
-                "options": ["Yuan", "Yen", "Dollaro", "Euro"],
-                "answer": "Yen"
-            },
-            {
-                "question": "Chi ha dipinto la Mona Lisa?",
-                "options": ["Michelangelo", "Raffaello", "Leonardo da Vinci", "Caravaggio"],
-                "answer": "Leonardo da Vinci"
-            },
-            {
-                "question": "Qual è la capitale della Francia?",
-                "options": ["Londra", "Parigi", "Berlino", "Madrid"],
-                "answer": "Parigi"
-            },
-            {
-                "question": "Qual è la montagna più alta del mondo?",
-                "options": ["K2", "Kilimanjaro", "Everest", "Aconcagua"],
-                "answer": "Everest"
-            },
-            {
-                "question": "Chi ha scritto 'Il Signore degli Anelli'?",
-                "options": ["J.K. Rowling", "J.R.R. Tolkien", "George R.R. Martin", "C.S. Lewis"],
-                "answer": "J.R.R. Tolkien"
-            },
-            {
-                "question": "Qual è la capitale dell'India?",
-                "options": ["Mumbai", "Nuova Delhi", "Calcutta", "Chennai"],
-                "answer": "Nuova Delhi"
-            },
-            {
-                "question": "Qual è il simbolo chimico dell'acqua?",
-                "options": ["H2", "O2", "H2O", "HO"],
-                "answer": "H2O"
-            },
-            {
-                "question": "Qual è il frutto principale utilizzato per fare il vino?",
-                "options": ["Mele", "Arance", "Uva", "Pere"],
-                "answer": "Uva"
-            },
-            {
-                "question": "Qual è il più grande oceano della Terra?",
-                "options": ["Oceano Atlantico", "Oceano Indiano", "Oceano Artico", "Oceano Pacifico"],
-                "answer": "Oceano Pacifico"
-            },
-            {
-                "question": "Chi ha inventato la lampadina?",
-                "options": ["Nikola Tesla", "Albert Einstein", "Thomas Edison", "Alexander Graham Bell"],
-                "answer": "Thomas Edison"
-            },
-            {
-                "question": "Qual è la capitale del Regno Unito?",
-                "options": ["Edimburgo", "Dublino", "Londra", "Cardiff"],
-                "answer": "Londra"
-            },
-            {
-                "question": "Qual è il paese più grande del mondo per superficie?",
-                "options": ["Canada", "Cina", "Stati Uniti", "Russia"],
-                "answer": "Russia"
-            },
-            {
-                "question": "Qual è l'elemento chimico con simbolo O?",
-                "options": ["Oro", "Ossigeno", "Osmio", "Olmo"],
-                "answer": "Ossigeno"
-            },
-            {
-                "question": "Qual è il numero di pianeti nel sistema solare?",
-                "options": ["7", "8", "9", "10"],
-                "answer": "8"
-            }
-        ];
+        const questions = {
+            "it": [
+                {
+                    "question": "Qual è il colore del cielo?",
+                    "options": ["Blu", "Verde", "Rosso", "Giallo"],
+                    "answer": "Blu"
+                },
+                {
+                    "question": "Quanti giorni ci sono in una settimana?",
+                    "options": ["5", "6", "7", "8"],
+                    "answer": "7"
+                },
+                {
+                    "question": "Qual è la capitale d'Italia?",
+                    "options": ["Milano", "Roma", "Venezia", "Napoli"],
+                    "answer": "Roma"
+                },
+                {
+                    "question": "Quanto fa 2 + 2?",
+                    "options": ["3", "4", "5", "6"],
+                    "answer": "4"
+                },
+                {
+                    "question": "Qual è l'animale simbolo dell'Australia?",
+                    "options": ["Canguro", "Elefante", "Leone", "Orso"],
+                    "answer": "Canguro"
+                },
+                {
+                    "question": "Qual è il pianeta più vicino al sole?",
+                    "options": ["Terra", "Marte", "Mercurio", "Venere"],
+                    "answer": "Mercurio"
+                },
+                {
+                    "question": "Qual è la valuta del Giappone?",
+                    "options": ["Yuan", "Yen", "Dollaro", "Euro"],
+                    "answer": "Yen"
+                },
+                {
+                    "question": "Chi ha dipinto la Mona Lisa?",
+                    "options": ["Michelangelo", "Raffaello", "Leonardo da Vinci", "Caravaggio"],
+                    "answer": "Leonardo da Vinci"
+                },
+                {
+                    "question": "Qual è la capitale della Francia?",
+                    "options": ["Londra", "Parigi", "Berlino", "Madrid"],
+                    "answer": "Parigi"
+                },
+                {
+                    "question": "Qual è la montagna più alta del mondo?",
+                    "options": ["K2", "Kilimanjaro", "Everest", "Aconcagua"],
+                    "answer": "Everest"
+                },
+                {
+                    "question": "Chi ha scritto 'Il Signore degli Anelli'?",
+                    "options": ["J.K. Rowling", "J.R.R. Tolkien", "George R.R. Martin", "C.S. Lewis"],
+                    "answer": "J.R.R. Tolkien"
+                },
+                {
+                    "question": "Qual è la capitale dell'India?",
+                    "options": ["Mumbai", "Nuova Delhi", "Calcutta", "Chennai"],
+                    "answer": "Nuova Delhi"
+                },
+                {
+                    "question": "Qual è il simbolo chimico dell'acqua?",
+                    "options": ["H2", "O2", "H2O", "HO"],
+                    "answer": "H2O"
+                },
+                {
+                    "question": "Qual è il frutto principale utilizzato per fare il vino?",
+                    "options": ["Mele", "Arance", "Uva", "Pere"],
+                    "answer": "Uva"
+                },
+                {
+                    "question": "Qual è il più grande oceano della Terra?",
+                    "options": ["Oceano Atlantico", "Oceano Indiano", "Oceano Artico", "Oceano Pacifico"],
+                    "answer": "Oceano Pacifico"
+                },
+                {
+                    "question": "Chi ha inventato la lampadina?",
+                    "options": ["Nikola Tesla", "Albert Einstein", "Thomas Edison", "Alexander Graham Bell"],
+                    "answer": "Thomas Edison"
+                },
+                {
+                    "question": "Qual è la capitale del Regno Unito?",
+                    "options": ["Edimburgo", "Dublino", "Londra", "Cardiff"],
+                    "answer": "Londra"
+                },
+                {
+                    "question": "Qual è il paese più grande del mondo per superficie?",
+                    "options": ["Canada", "Cina", "Stati Uniti", "Russia"],
+                    "answer": "Russia"
+                },
+                {
+                    "question": "Qual è l'elemento chimico con simbolo O?",
+                    "options": ["Oro", "Ossigeno", "Osmio", "Olmo"],
+                    "answer": "Ossigeno"
+                },
+                {
+                    "question": "Qual è il numero di pianeti nel sistema solare?",
+                    "options": ["7", "8", "9", "10"],
+                    "answer": "8"
+                }
+            ],
+            "fr": [
+                {
+                    "question": "Quelle est la couleur du ciel ?",
+                    "options": ["Bleu", "Vert", "Rouge", "Jaune"],
+                    "answer": "Bleu"
+                },
+                {
+                    "question": "Combien de jours y a-t-il dans une semaine ?",
+                    "options": ["5", "6", "7", "8"],
+                    "answer": "7"
+                },
+                {
+                    "question": "Quelle est la capitale de l'Italie ?",
+                    "options": ["Milan", "Rome", "Venise", "Naples"],
+                    "answer": "Rome"
+                },
+                {
+                    "question": "Combien font 2 + 2 ?",
+                    "options": ["3", "4", "5", "6"],
+                    "answer": "4"
+                },
+                {
+                    "question": "Quel est l'animal emblématique de l'Australie ?",
+                    "options": ["Kangourou", "Éléphant", "Lion", "Ours"],
+                    "answer": "Kangourou"
+                },
+                {
+                    "question": "Quelle est la planète la plus proche du soleil ?",
+                    "options": ["Terre", "Mars", "Mercure", "Vénus"],
+                    "answer": "Mercure"
+                },
+                {
+                    "question": "Quelle est la monnaie du Japon ?",
+                    "options": ["Yuan", "Yen", "Dollar", "Euro"],
+                    "answer": "Yen"
+                },
+                {
+                    "question": "Qui a peint la Mona Lisa ?",
+                    "options": ["Michel-Ange", "Raphaël", "Léonard de Vinci", "Caravage"],
+                    "answer": "Léonard de Vinci"
+                },
+                {
+                    "question": "Quelle est la capitale de la France ?",
+                    "options": ["Londres", "Paris", "Berlin", "Madrid"],
+                    "answer": "Paris"
+                },
+                {
+                    "question": "Quel est le plus haut sommet du monde ?",
+                    "options": ["K2", "Kilimandjaro", "Everest", "Aconcagua"],
+                    "answer": "Everest"
+                },
+                {
+                    "question": "Qui a écrit 'Le Seigneur des Anneaux' ?",
+                    "options": ["J.K. Rowling", "J.R.R. Tolkien", "George R.R. Martin", "C.S. Lewis"],
+                    "answer": "J.R.R. Tolkien"
+                },
+                {
+                    "question": "Quelle est la capitale de l'Inde ?",
+                    "options": ["Mumbai", "New Delhi", "Calcutta", "Chennai"],
+                    "answer": "New Delhi"
+                },
+                {
+                    "question": "Quel est le symbole chimique de l'eau ?",
+                    "options": ["H2", "O2", "H2O", "HO"],
+                    "answer": "H2O"
+                },
+                {
+                    "question": "Quel est le fruit principal utilisé pour faire du vin ?",
+                    "options": ["Pommes", "Oranges", "Raisins", "Poires"],
+                    "answer": "Raisins"
+                },
+                {
+                    "question": "Quel est le plus grand océan de la Terre ?",
+                    "options": ["Océan Atlantique", "Océan Indien", "Océan Arctique", "Océan Pacifique"],
+                    "answer": "Océan Pacifique"
+                },
+                {
+                    "question": "Qui a inventé l'ampoule électrique ?",
+                    "options": ["Nikola Tesla", "Albert Einstein", "Thomas Edison", "Alexander Graham Bell"],
+                    "answer": "Thomas Edison"
+                },
+                {
+                    "question": "Quelle est la capitale du Royaume-Uni ?",
+                    "options": ["Édimbourg", "Dublin", "Londres", "Cardiff"],
+                    "answer": "Londres"
+                },
+                {
+                    "question": "Quel est le plus grand pays du monde par superficie ?",
+                    "options": ["Canada", "Chine", "États-Unis", "Russie"],
+                    "answer": "Russie"
+                },
+                {
+                    "question": "Quel est l'élément chimique avec le symbole O ?",
+                    "options": ["Or", "Oxygène", "Osmium", "Orme"],
+                    "answer": "Oxygène"
+                },
+                {
+                    "question": "Combien y a-t-il de planètes dans le système solaire ?",
+                    "options": ["7", "8", "9", "10"],
+                    "answer": "8"
+                }
+            ]
+        };
 
-        $(document).ready(function() {
+        let currentLanguage = 'it';
+
+        function loadQuiz(language) {
+            currentLanguage = language;
             var quizContainer = $('#quiz');
+            quizContainer.empty();
             
             // Genera il quiz
-            questions.forEach(function(question, index) {
+            questions[language].forEach(function(question, index) {
                 var questionHTML = '<div class="question">';
                 questionHTML += '<h3>' + (index + 1) + '. ' + question.question + '</h3>';
                 questionHTML += '<div class="options">';
@@ -185,18 +309,32 @@
                 quizContainer.append(questionHTML);
             });
 
+            $('#results').empty();
+        }
+
+        $(document).ready(function() {
+            loadQuiz(currentLanguage);
+
+            $('#italian').click(function() {
+                loadQuiz('it');
+            });
+
+            $('#french').click(function() {
+                loadQuiz('fr');
+            });
+
             // Gestisci l'invio del quiz
             $('#submit').click(function() {
                 var score = 0;
 
-                questions.forEach(function(question, index) {
+                questions[currentLanguage].forEach(function(question, index) {
                     var selectedOption = $('input[name="question' + index + '"]:checked').val();
                     if (selectedOption === question.answer) {
                         score++;
                     }
                 });
 
-                $('#results').html('Hai risposto correttamente a ' + score + ' su ' + questions.length + ' domande.');
+                $('#results').html('Hai risposto correttamente a ' + score + ' su ' + questions[currentLanguage].length + ' domande.');
             });
         });
     </script>
