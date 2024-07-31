@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Dati Studenti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #searchBox {
+            display: block;
+            margin: 10px auto;
+            width: 50%;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #adminPinPrompt {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .language-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-buttons">
+        <button id="englishButton">English</button>
+        <button id="frenchButton">Français</button>
+        <button id="italianButton">Italiano</button>
+    </div>
+
+    <h1 id="title">Gestione Dati Studenti</h1>
+    
+    <input type="text" id="searchBox" placeholder="Cerca...">
+    
+    <table id="studentsTable">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Data Nascita</th>
+                <th>Classe</th>
+                <th>Matematica</th>
+                <th>Fisica</th>
+                <th>Chimica</th>
+                <th>Biologia</th>
+                <th>Storia</th>
+                <th>Geografia</th>
+                <th>Filosofia</th>
+                <th>Letteratura</th>
+                <th>Lingua Straniera</th>
+                <th>Malgascia</th>
+                <th>Media Voti</th>
+                <th>Seleziona</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dati studenti qui -->
+        </tbody>
+    </table>
+    
+    <button id="addButton">Add</button>
+    <button id="deleteButton">Canc</button>
+    <button id="deleteAllButton">Canc All</button>
+    
+    <div id="adminPinPrompt" style="display:none;">
+        <label for="adminPin" id="adminPinLabel">Inserisci PIN Admin:</label>
+        <input type="password" id="adminPin">
+        <button id="confirmPinButton">Conferma</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.querySelector('#studentsTable tbody');
+            const searchBox = document.getElementById('searchBox');
+            const addButton = document.getElementById('addButton');
+            const deleteButton = document.getElementById('deleteButton');
+            const deleteAllButton = document.getElementById('deleteAllButton');
+            const adminPinPrompt = document.getElementById('adminPinPrompt');
+            const confirmPinButton = document.getElementById('confirmPinButton');
+            const adminPin = '1234';  // Admin PIN for deletion actions
+
+            // Add search functionality
+            searchBox.addEventListener('input', () => {
+                const filter = searchBox.value.toLowerCase();
+                const rows = tableBody.getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    let cells = rows[i].getElementsByTagName('td');
+                    let match = false;
+                    for (let j = 0; j < cells.length - 1; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            match = true;
+                            break;
+                        }
+                    }
+                    rows[i].style.display = match ? '' : 'none';
+                }
+            });
+
+            // Add functionality to make table cells editable
+            tableBody.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target.tagName === 'TD' && target.cellIndex !== 16) {
+                    let input = document.createElement('input');
+                    input.value = target.textContent;
+                    target.textContent = '';
+                    target.appendChild(input);
+                    input.focus();
+                    input.addEventListener('blur', () => {
+                        target.textContent = input.value;
+                        updateAverage(target.parentElement);
+                    });
+                }
+            });
+
+            // Add functionality to add new rows
+            addButton.addEventListener('click', () => {
+                const newRow = document.createElement('tr');
+                for (let i = 0; i < 16; i++) {
+                    let cell = document.createElement('td');
+                    cell.textContent = i === 0 ? tableBody.rows.length + 1 : '';
+                    newRow.appendChild(cell);
+                }
+                let selectCell = document.createElement('td');
+                let selectInput = document.createElement('input');
+                selectInput.type = 'checkbox';
+                selectCell.appendChild(selectInput);
+                newRow.appendChild(selectCell);
+                tableBody.appendChild(newRow);
+            });
+
+            // Add functionality to delete selected rows
+            deleteButton.addEventListener('click', () => {
+                const selectedRows = tableBody.querySelectorAll('input[type="checkbox"]:checked');
+                if (selectedRows.length > 0) {
+                    adminPinPrompt.style.display = 'block';
+                    confirmPinButton.onclick = () => {
+                        const pin = document.getElementById('adminPin').value;
+                        if (pin === adminPin) {
+                            selectedRows.forEach(row => row.closest('tr').remove());
+                            adminPinPrompt.style.display = 'none';
+                        } else {
+                            alert('PIN amministrativo errato');
+                        }
+                    };
+                }
+            });
+
+            // Add functionality to delete all rows
+            deleteAllButton.addEventListener('click', () => {
+                if (tableBody.rows.length > 0) {
+                    adminPinPrompt.style.display = 'block';
+                    confirmPinButton.onclick = () => {
+                        const pin = document.getElementById('adminPin').value;
+                        if (pin === adminPin) {
+                            while (tableBody.firstChild) {
+                                tableBody.removeChild(tableBody.firstChild);
+                            }
+                            adminPinPrompt.style.display = 'none';
+                        } else {
+                            alert('PIN amministrativo errato');
+                        }
+                    };
+                }
+            });
+
+            // Update the average grade for a row
+            function updateAverage(row) {
+                let total = 0;
+                let count = 0;
+                for (let i = 5; i <= 14; i++) {
+                    let grade = parseFloat(row.cells[i].textContent);
+                    if (!isNaN(grade)) {
+                        total += grade;
+                        count++;
+                    }
+                }
+                row.cells[15].textContent = count > 0 ? (total / count).toFixed(2) : '';
+            }
+
+            // Language switching functionality
+            const englishButton = document.getElementById('englishButton');
+            const frenchButton = document.getElementById('frenchButton');
+            const italianButton = document.getElementById('italianButton');
+
+            const translations = {
+                en: {
+                    title: 'Student Data Management',
+                    searchPlaceholder: 'Search...',
+                    addButton: 'Add',
+                    deleteButton: 'Delete',
+                    deleteAllButton: 'Delete All',
+                    adminPinLabel: 'Enter Admin PIN:',
+                    confirmButton: 'Confirm',
+                    headers: [
+                        'id', 'Name', 'Surname', 'Date of Birth', 'Class',
+                        'Mathematics', 'Physics', 'Chemistry', 'Biology',
+                        'History', 'Geography', 'Philosophy', 'Literature',
+                        'Foreign Language', 'Malagasy', 'Average Grades', 'Select'
+                    ]
+                },
+                fr: {
+                    title: 'Gestion des Données Étudiants',
+                    searchPlaceholder: 'Chercher...',
+                    addButton: 'Ajouter',
+                    deleteButton: 'Supprimer',
+                    deleteAllButton: 'Tout Supprimer',
+                    adminPinLabel: "Entrez le PIN Admin :",
+                    confirmButton: 'Confirmer',
+                    headers: [
+                        'id', 'Nom', 'Prénom', 'Date de Naissance', 'Classe',
+                        'Mathématiques', 'Physique', 'Chimie', 'Biologie',
+                        'Histoire', 'Géographie', 'Philosophie', 'Littérature',
+                        'Langue Étrangère', 'Malagasy', 'Moyenne des Notes', 'Sélectionner'
+                    ]
+                },
+                it: {
+                    title: 'Gestione Dati Studenti',
+                    searchPlaceholder: 'Cerca...',
+                    addButton: 'Aggiungi',
+                    deleteButton: 'Cancella',
+                    deleteAllButton: 'Cancella Tutto',
+                    adminPinLabel: 'Inserisci PIN Admin:',
+                    confirmButton: 'Conferma',
+                    headers: [
+                        'id', 'Nome', 'Cognome', 'Data di Nascita', 'Classe',
+                        'Matematica', 'Fisica', 'Chimica', 'Biologia',
+                        'Storia', 'Geografia', 'Filosofia', 'Letteratura',
+                        'Lingua Straniera', 'Malgascia', 'Media dei Voti', 'Seleziona'
+                    ]
+                }
+            };
+
+            function changeLanguage(lang) {
+                const translation = translations[lang];
+                document.getElementById('title').textContent = translation.title;
+                searchBox.placeholder = translation.searchPlaceholder;
+                addButton.textContent = translation.addButton;
+                deleteButton.textContent = translation.deleteButton;
+                deleteAllButton.textContent = translation.deleteAllButton;
+                document.getElementById('adminPinLabel').textContent = translation.adminPinLabel;
+                confirmPinButton.textContent = translation.confirmButton;
+                
+                const headers = document.querySelectorAll('#studentsTable th');
+                headers.forEach((header, index) => {
+                    header.textContent = translation.headers[index];
+                });
+            }
+
+            englishButton.addEventListener('click', () => changeLanguage('en'));
+            frenchButton.addEventListener('click', () => changeLanguage('fr'));
+            italianButton.addEventListener('click', () => changeLanguage('it'));
+
+            // Set initial language
+            changeLanguage('it');
+        });
+    </script>
+</body>
+</html>
