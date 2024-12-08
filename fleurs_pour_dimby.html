@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour ma chère Dimbisoa</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .stem {
+            position: relative;
+            width: 10px;
+            height: 150px;
+            background-color: green;
+            margin-top: 20px;
+            animation: growStem 5s ease-in-out forwards;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background-color: green;
+            border-radius: 20px;
+            animation: growLeaf 5s ease-in-out forwards;
+        }
+
+        .leaf-left {
+            top: 60px;
+            left: -15px;
+            transform-origin: right;
+            animation-delay: 1s;
+        }
+
+        .leaf-right {
+            top: 80px;
+            right: -15px;
+            transform-origin: left;
+            animation-delay: 1.5s;
+        }
+
+        .flower {
+            position: absolute;
+            top: -40px;
+            left: -35px;
+            width: 80px;
+            height: 80px;
+            background-color: red;
+            border-radius: 50%;
+            opacity: 0;
+            animation: bloom 3s ease-in-out forwards 5s;
+        }
+
+        .petal {
+            position: absolute;
+            width: 50px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,182,193,1) 70%);
+            border-radius: 50%;
+            transform-origin: bottom;
+            animation: appear 2s ease-in-out infinite alternate;
+        }
+
+        .petal:nth-child(1) { transform: rotate(0deg); }
+        .petal:nth-child(2) { transform: rotate(60deg); }
+        .petal:nth-child(3) { transform: rotate(120deg); }
+        .petal:nth-child(4) { transform: rotate(180deg); }
+        .petal:nth-child(5) { transform: rotate(240deg); }
+        .petal:nth-child(6) { transform: rotate(300deg); }
+
+        @keyframes growStem {
+            from { height: 0; }
+            to { height: 150px; }
+        }
+
+        @keyframes growLeaf {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes bloom {
+            from { opacity: 0; transform: scale(0); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes appear {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Pour ma chère Dimbisoa</h1>
+    <div class="stem">
+        <div class="leaf leaf-left"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="flower">
+            <div class="petal"></div>
+            <div class="petal"></div>
+            <div class="petal"></div>
+            <div class="petal"></div>
+            <div class="petal"></div>
+            <div class="petal"></div>
+        </div>
+    </div>
+</body>
+</html>

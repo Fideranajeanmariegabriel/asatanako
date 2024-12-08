@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour ma chérie Dimbisoa</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb);
+            overflow: hidden;
+        }
+
+        h1 {
+            position: absolute;
+            top: 10%;
+            width: 100%;
+            text-align: center;
+            font-size: 3em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .garden {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .flower {
+            position: relative;
+            margin: 20px;
+            animation: grow 5s ease-in-out infinite;
+        }
+
+        .stem {
+            width: 8px;
+            height: 100px;
+            background-color: green;
+            animation: growStem 5s ease-in-out forwards;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background-color: green;
+            border-radius: 20px;
+        }
+
+        .leaf-left {
+            left: -20px;
+            top: 50px;
+            transform-origin: right;
+            animation: growLeaf 5s ease-in-out forwards;
+        }
+
+        .leaf-right {
+            right: -20px;
+            top: 70px;
+            transform-origin: left;
+            animation: growLeaf 5s ease-in-out forwards;
+        }
+
+        .flower-head {
+            position: absolute;
+            top: -50px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+            background-color: red;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            animation: bloom 5s ease-in-out forwards;
+        }
+
+        .petal {
+            position: absolute;
+            width: 50px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, white, rgba(255, 255, 255, 0.5));
+        }
+
+        .petal:nth-child(1) { transform: rotate(0deg) translateY(-25px); }
+        .petal:nth-child(2) { transform: rotate(60deg) translateY(-25px); }
+        .petal:nth-child(3) { transform: rotate(120deg) translateY(-25px); }
+        .petal:nth-child(4) { transform: rotate(180deg) translateY(-25px); }
+        .petal:nth-child(5) { transform: rotate(240deg) translateY(-25px); }
+        .petal:nth-child(6) { transform: rotate(300deg) translateY(-25px); }
+
+        @keyframes growStem {
+            from { height: 0; }
+            to { height: 100px; }
+        }
+
+        @keyframes growLeaf {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes bloom {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Pour ma chérie Dimbisoa</h1>
+    <div class="garden" id="garden"></div>
+
+    <script>
+        // Funzione per creare fiori colorati casuali
+        function createFlower() {
+            const flower = document.createElement("div");
+            flower.classList.add("flower");
+
+            const stem = document.createElement("div");
+            stem.classList.add("stem");
+
+            const leafLeft = document.createElement("div");
+            leafLeft.classList.add("leaf", "leaf-left");
+
+            const leafRight = document.createElement("div");
+            leafRight.classList.add("leaf", "leaf-right");
+
+            const flowerHead = document.createElement("div");
+            flowerHead.classList.add("flower-head");
+            flowerHead.style.backgroundColor = getRandomColor();
+
+            for (let i = 0; i < 6; i++) {
+                const petal = document.createElement("div");
+                petal.classList.add("petal");
+                petal.style.background = `radial-gradient(circle, white, ${getRandomColor()})`;
+                flowerHead.appendChild(petal);
+            }
+
+            flower.appendChild(stem);
+            stem.appendChild(leafLeft);
+            stem.appendChild(leafRight);
+            flower.appendChild(flowerHead);
+
+            return flower;
+        }
+
+        // Funzione per generare un colore casuale
+        function getRandomColor() {
+            const letters = "0123456789ABCDEF";
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Aggiungi fiori al giardino
+        const garden = document.getElementById("garden");
+        for (let i = 0; i < 30; i++) {
+            const flower = createFlower();
+            garden.appendChild(flower);
+        }
+    </script>
+</body>
+</html>
