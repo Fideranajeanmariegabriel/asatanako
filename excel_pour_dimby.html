@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Excel en Français</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            color: #fff;
+            padding: 10px 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .burger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(90deg, #2196F3, #4CAF50);
+            color: white;
+        }
+
+        .about, .services, .contact {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .services table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .services table th, .services table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .services table th {
+            background: #f4f4f4;
+        }
+
+        footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: #333;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .burger {
+                display: flex;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const burger = document.querySelector(".burger");
+            const navLinks = document.querySelector(".nav-links");
+
+            burger.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Excel Guide</div>
+            <ul class="nav-links">
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#base">Opérations de base</a></li>
+                <li><a href="#formules">Formules de base</a></li>
+                <li><a href="#avancees">Opérations avancées</a></li>
+                <li><a href="#astuces">Astuces</a></li>
+            </ul>
+            <button class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <section id="introduction" class="hero">
+        <h1>Introduction à Excel</h1>
+        <p>Excel est organisé en colonnes (identifiées par des lettres) et en lignes (identifiées par des chiffres). Une cellule est identifiée par la combinaison d'une colonne et d'une ligne (par exemple : A1). Les feuilles peuvent contenir plusieurs tableaux (appelées "Feuille" dans Excel en français).</p>
+    </section>
+
+    <section id="base" class="about">
+        <h2>Opérations de base</h2>
+        <ul>
+            <li><strong>Insérer une formule :</strong> Chaque formule commence par le symbole <code>=</code> dans une cellule.</li>
+            <li><strong>Somme simple :</strong> En anglais : <code>=SUM(A1:A10)</code> | En français : <code>=SOMME(A1:A10)</code></li>
+            <li><strong>Multiplication entre deux cellules :</strong> En anglais : <code>=A1*B1</code> | En français : <code>=A1*B1</code></li>
+        </ul>
+    </section>
+
+    <section id="formules" class="services">
+        <h2>Formules de base</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fonction (Anglais)</th>
+                    <th>Fonction (Français)</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>SUM</td><td>SOMME</td><td>Fait la somme d’une plage de cellules.</td></tr>
+                <tr><td>AVERAGE</td><td>MOYENNE</td><td>Calcule la moyenne d’une plage de cellules.</td></tr>
+                <tr><td>IF</td><td>SI</td><td>Condition : renvoie une valeur si une condition est vraie ou fausse.</td></tr>
+                <tr><td>COUNT</td><td>NB</td><td>Compte le nombre de cellules non vides.</td></tr>
+                <tr><td>COUNTA</td><td>NBVAL</td><td>Compte le nombre de cellules contenant une valeur quelconque (nombres ou texte).</td></tr>
+                <tr><td>LEFT</td><td>GAUCHE</td><td>Renvoie un certain nombre de caractères depuis la gauche d’une chaîne.</td></tr>
+                <tr><td>RIGHT</td><td>DROITE</td><td>Renvoie un certain nombre de caractères depuis la droite d’une chaîne.</td></tr>
+                <tr><td>LEN</td><td>NBCAR</td><td>Compte le nombre de caractères dans une chaîne.</td></tr>
+                <tr><td>TRIM</td><td>SUPPRESPACE</td><td>Supprime les espaces inutiles.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="avancees" class="services">
+        <h2>Opérations avancées</h2>
+        <h3>Formules conditionnelles :</h3>
+        <ul>
+            <li><strong>SI (IF) :</strong> En anglais : <code>=IF(A1>10, "Yes", "No")</code> | En français : <code>=SI(A1>10; "Oui"; "Non")</code></li>
+            <li><strong>SI imbriqué :</strong> En anglais : <code>=IF(A1>10, "High", IF(A1<5, "Low", "Medium"))</code> | En français : <code>=SI(A1>10; "Haut"; SI(A1<5; "Bas"; "Moyen"))</code></li>
+        </ul>
+        <h3>Fonctions de recherche :</h3>
+        <ul>
+            <li><strong>RECHERCHEV (VLOOKUP) :</strong> En anglais : <code>=VLOOKUP(lookup_value, table_array, col_index, [range_lookup])</code> | En français : <code>=RECHERCHEV(valeur_cherchée; table_matrice; no_index_colonne; [valeur_proche])</code></li>
+            <li><strong>RECHERCHEH (HLOOKUP) :</strong> En anglais : <code>=HLOOKUP(lookup_value, table_array, row_index, [range_lookup])</code> | En français : <code>=RECHERCHEH(valeur_cherchée; table_matrice; no_index_ligne; [valeur_proche])</code></li>
+            <li><strong>INDICE et EQUIV (INDEX et MATCH) :</strong> En anglais : <code>=INDEX(array, row_num, [col_num])</code> | En français : <code>=INDICE(plage; no_ligne; [no_colonne])</code></li>
+            <li>En anglais : <code>=MATCH(lookup_value, lookup_array, [match_type])</code> | En français : <code>=EQUIV(valeur_cherchée; plage; [type_correspondance])</code></li>
+        </ul>
+    </section>
+
+    <section id="astuces" class="contact">
+        <h2>Astuces et conseils</h2>
+        <ul>
+            <li><strong>Tableau croisé dynamique :</strong> Créez un "Tableau croisé dynamique" pour analyser de grandes quantités de données (Menu → Insertion → Tableau croisé dynamique).</li>
+            <li><strong>Mise en forme conditionnelle :</strong> Permet de mettre en évidence des cellules en fonction de certaines conditions (Menu → Accueil → Mise en forme conditionnelle).</li>
+            <li><strong>Créer une macro :</strong> Vous pouvez automatiser des opérations en enregistrant une macro (Menu → Développeur → Enregistrer une macro).</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 - Guide Excel Pour Dimby. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
